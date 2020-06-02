@@ -1,24 +1,33 @@
 import socket
 import threading
+from Cryptodome.PublicKey import RSA
+from Cryptodome import Random
+from Cryptodome.Cipher import PKCS1_OAEP
 
-HEADER = 16
+ALLOW = 2048
 PORT = 6666
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 TO_DISCONNECT = '!DISCONNECT!'
 
+
 server_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
 server_socket.bind(ADDR)
+
+random_generator = Random.new().read
+key = RSA.generate(1024, random_generator)
+publickey = key.publickey()
+decipher_rsa = PKCS1_OAEP.new(key)
+
 
 def each_client(data , addr):
     print(f"[NEW CONNECTION] {addr} connected.")
     connection = True
+    data.send(publickey.exportKey())
     while connection:
-        msg_l = data.recv(HEADER).decode(FORMAT)
-        if msg_l:
-          msg_l = int(msg_l)
-          msg = data.recv(msg_l).decode(FORMAT)
+        msg = decipher_rsa.decrypt(data.recv(ALLOW)).decode(FORMAT)
+        if msg:
           if (msg == TO_DISCONNECT):
               connection = False
               print(f"{addr} has been disconnected")

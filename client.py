@@ -1,6 +1,8 @@
 import socket
+from Cryptodome.PublicKey import RSA
+from Cryptodome.Cipher import PKCS1_OAEP
 
-HEADER = 16
+ALLOW = 2048
 PORT = 6666
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
@@ -10,13 +12,13 @@ TO_DISCONNECT = '!DISCONNECT!'
 client_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
 client_socket.connect(ADDR)
 
+publicKey = client_socket.recv(1024)
+publicKey = RSA.importKey(publicKey)
+
 def send(msg):
-    msg = msg.encode(FORMAT)
-    msg_l = len(msg)
-    msg_l = str(msg_l).encode(FORMAT)
-    msg_l += b' ' * (HEADER - len(msg_l))
-    client_socket.send(msg_l)
-    client_socket.send(msg)
+    cipher_rsa = PKCS1_OAEP.new(publicKey)
+    client_socket.send(cipher_rsa.encrypt(msg.encode('utf-8')))
+
 
 def user_input():
     connection = True
@@ -28,3 +30,4 @@ def user_input():
           print(client_socket.recv(64).decode(FORMAT))
 
 user_input()
+
