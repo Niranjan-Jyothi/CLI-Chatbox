@@ -25,16 +25,18 @@ def send(msg,is_cmd):
 
 
 def user_input():
+    user_name = input(Enter your Username : )
     connection = True
     is_cmd = False
     while connection:
       a = input("Enter your text : ")
-      if a[0]=='$':
+      if a:
+        if a[0]=='$':
           is_cmd = True
-      is_cmd = send(a,is_cmd)
-      if a==TO_DISCONNECT:
-          connection = False
-          print(client_socket.recv(64).decode(FORMAT))
+        is_cmd = send(a,is_cmd)
+        if a==TO_DISCONNECT:
+            connection = False
+            print(client_socket.recv(64).decode(FORMAT))
 
 user_input()
 

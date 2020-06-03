@@ -35,13 +35,14 @@ def each_client(data , addr):
               data.send("You Have Been Disconnected From The Server".encode(FORMAT))
           elif msg[0]=='$':
               msg= msg[1:len(msg)]
+              print(msg.split())
               try :
                 a = subprocess.run(msg.split())
                 if a.returncode==0:
                     data.send("Command Success".encode(FORMAT))
-                else: data.send("Command Error".encode(FORMAT))
+                else: data.send("Command Error from return code".encode(FORMAT))
               except FileNotFoundError:
-                  data.send("Command Error".encode(FORMAT))
+                  data.send("Command Error from fileError".encode(FORMAT))
           else:
 
               print(f'{addr} {msg}')
