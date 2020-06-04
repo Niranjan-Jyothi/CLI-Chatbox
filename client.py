@@ -14,29 +14,30 @@ client_socket.connect(ADDR)
 
 publicKey = client_socket.recv(1024)
 publicKey = RSA.importKey(publicKey)
+cipher_rsa = PKCS1_OAEP.new(publicKey)
 
-def send(msg,is_cmd):
+def send(msg):
     cipher_rsa = PKCS1_OAEP.new(publicKey)
     client_socket.send(cipher_rsa.encrypt(msg.encode('utf-8')))
-    if is_cmd :
-        command_return = client_socket.recv(1024).decode(FORMAT)
-        print(command_return)
+    command_ack = client_socket.recv(1024).decode(FORMAT)
+    print(command_ack)
     return False
 
-
 def user_input():
-    user_name = input(Enter your Username : )
+    valid_username = False
+    while not valid_username:
+        USERNAME = input("Enter your Username(unique) : ")
+        client_socket.send(cipher_rsa.encrypt(USERNAME.encode('utf-8')))
+        valid_username = eval(client_socket.recv(16).decode(FORMAT))
     connection = True
-    is_cmd = False
     while connection:
-      a = input("Enter your text : ")
-      if a:
-        if a[0]=='$':
-          is_cmd = True
-        is_cmd = send(a,is_cmd)
+      a = input("Enter your text/command($) : ")
+      if a!="":
+        send(a)
         if a==TO_DISCONNECT:
             connection = False
             print(client_socket.recv(64).decode(FORMAT))
 
 user_input()
+
 

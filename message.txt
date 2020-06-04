@@ -1,0 +1,22 @@
+$df -h -x squashfs 
+enter your commands starting wit "$" operator
+$ps
+Hello server
+$ls -l
+@ls -a - is not a command
+this is an automated process
+$ls -lh
+$echo Welcom from the client side
+$uname -s
+we are a family of 20 clients
+$ls -a
+Hi!
+To disconnect from server enter - " !DISCONNECT! "
+$ls -lha
+$pwd
+Some more commands :)
+$uname -a
+You can try most linux function except for 'cd' as it will cause fileNotFoundError
+$uname -r
+$uname -v
+Thats all for this sample file. :)
